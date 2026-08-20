@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>تسجيل الحضور</title>
+
   <meta name="theme-color" content="#2563eb">
+
   <script src="https://unpkg.com/html5-qrcode"></script>
+
   <style>
     :root {
       --bg: #f6f7fb;
@@ -16,11 +21,14 @@
       --primary: #2563eb;
       --primary-600: #1d4ed8;
       --danger: #dc2626;
+      --success: #16a34a;
       --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
       --radius: 14px;
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -31,7 +39,7 @@
     }
 
     .container {
-      width: min(980px, calc(100% - 32px));
+      width: min(1100px, calc(100% - 32px));
       margin: 28px auto 40px;
     }
 
@@ -43,7 +51,6 @@
     .header h2 {
       margin: 0;
       font-weight: 700;
-      letter-spacing: 0.2px;
     }
 
     .header p {
@@ -68,7 +75,9 @@
     }
 
     @media (max-width: 860px) {
-      .grid { grid-template-columns: 1fr; }
+      .grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     #reader {
@@ -77,7 +86,6 @@
       margin: 0 auto;
     }
 
-    /* html5-qrcode renders its own elements; keep it visually contained */
     #reader > div {
       border-radius: 12px;
       overflow: hidden;
@@ -90,7 +98,9 @@
       font-size: 13px;
     }
 
-    select, button, input {
+    select,
+    button,
+    input {
       width: 100%;
       border: 1px solid var(--border);
       border-radius: 12px;
@@ -98,12 +108,18 @@
       font-size: 15px;
       outline: none;
       background: #fff;
-      transition: border-color 120ms ease, box-shadow 120ms ease, transform 60ms ease;
+      transition:
+        border-color 120ms ease,
+        box-shadow 120ms ease,
+        transform 60ms ease;
     }
 
-    input::placeholder { color: #9ca3af; }
+    input::placeholder {
+      color: #9ca3af;
+    }
 
-    select:focus, input:focus {
+    select:focus,
+    input:focus {
       border-color: rgba(37, 99, 235, 0.55);
       box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
     }
@@ -121,7 +137,9 @@
     }
 
     @media (max-width: 500px) {
-      .actions { grid-template-columns: 1fr; }
+      .actions {
+        grid-template-columns: 1fr;
+      }
     }
 
     button {
@@ -135,8 +153,13 @@
       border-color: rgba(37, 99, 235, 0.35);
     }
 
-    .btn-primary:hover { background: var(--primary-600); }
-    .btn-primary:active { transform: translateY(1px); }
+    .btn-primary:hover {
+      background: var(--primary-600);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+    }
 
     .btn-ghost {
       background: #fff;
@@ -165,13 +188,14 @@
     }
 
     #studentName {
-      margin: 12px 0 0;
+      margin: 18px 0 0;
       font-weight: 700;
       text-align: center;
+      font-size: 18px;
     }
 
     #attendanceTable {
-      margin-top: 10px;
+      margin-top: 15px;
       overflow-x: auto;
       border-radius: 12px;
     }
@@ -180,14 +204,15 @@
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
-      min-width: 720px;
+      min-width: 1000px;
       background: #fff;
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
     }
 
-    th, td {
+    th,
+    td {
       padding: 10px 12px;
       border-bottom: 1px solid var(--border);
       border-left: 1px solid var(--border);
@@ -195,8 +220,14 @@
       white-space: nowrap;
     }
 
-    tr:last-child td { border-bottom: 0; }
-    th:first-child, td:first-child { border-right: 0; }
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    th:first-child,
+    td:first-child {
+      border-right: 0;
+    }
 
     th {
       background: #f8fafc;
@@ -208,7 +239,17 @@
       z-index: 1;
     }
 
-    td { font-size: 18px; }
+    td {
+      font-size: 18px;
+    }
+
+    .present {
+      color: var(--success);
+    }
+
+    .absent {
+      color: var(--danger);
+    }
 
     .spinner {
       border: 3px solid #e5e7eb;
@@ -223,262 +264,942 @@
     }
 
     @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
     }
   </style>
-
 </head>
+
 <body>
+
   <main class="container">
+
     <div class="header">
       <h2>تانية ثانوي</h2>
       <p>تسجيل الحضور بالباركود أو بالكتابة اليدوية</p>
     </div>
 
     <section class="card grid">
+
+      <!-- ========================= -->
+      <!-- Scanner -->
+      <!-- ========================= -->
+
       <div>
         <div id="reader"></div>
       </div>
 
+      <!-- ========================= -->
+      <!-- Controls -->
+      <!-- ========================= -->
+
       <div class="controls">
-        <div>
-          <label for="attendanceType">نوع الحضور</label>
-          <select id="attendanceType">
-    <option value="الحضور الاول">الحضور الأول</option>
-    <option value="الحضور الثاني">الحضور الثاني</option>
-    <option value="الحضور الثالث">الحضور الثالث</option>
-    <option value="الحضور الرابع">الحضور الرابع</option>
-    <option value="الحضور الخامس">الحضور الخامس</option>
-    <option value="الحضور السادس">الحضور السادس</option>
-    <option value="الحضور السابع">الحضور السابع</option>
-    <option value="الحضور الثامن">الحضور الثامن</option>
-    <option value="الحضور التاسع">الحضور التاسع</option>
-    <option value="الحضور الشامل">الحضور الشامل</option>
-    <option value="الحضور العاشر">الحضور العاشر</option>
-    <option value="الحضور الحادي عشر">الحضور الحادي عشر</option>
-    <option value="الحضور الثاني عشر">الحضور الثاني عشر</option>
-    <option value="الحضور الثالث عشر">الحضور الثالث عشر</option>
-    <option value="الحضور الرابع عشر">الحضور الرابع عشر</option>    
-    <option value="الحضور الخامس عشر">الحضور الخامس عشر</option>    
-    <option value="الحضور السادس عشر">الحضور السادس عشر</option>    
-    <option value="الحضور السابع عشر">الحضور السابع عشر</option>    
-    <option value="حضور المراجعة الاولي">حضور المراجعة الاولي</option>    
-    <option value="حضور المراجعة الثانية">حضور المراجعة الثانية</option>    
-    <option value="حضور المراجعة الثالثة">حضور المراجعة الثالثة</option>    
-    <option value="حضور المراجعة ليلة الامتحان">حضور المراجعة ليلة الامتحان</option>
-          </select>
-        </div>
 
         <div>
-          <label for="manualBarcode">إدخال يدوي</label>
+          <label for="attendanceType">نوع الحضور</label>
+
+          <select id="attendanceType">
+
+            <!-- H -->
+            <option value="الحضور الاول">
+              الحضور الأول
+            </option>
+
+            <!-- I -->
+            <option value="الحضور الثاني">
+              الحضور الثاني
+            </option>
+
+            <!-- J -->
+            <option value="الحضور الثالث">
+              الحضور الثالث
+            </option>
+
+            <!-- K -->
+            <option value="الحضور الرابع">
+              الحضور الرابع
+            </option>
+
+            <!-- L -->
+            <option value="الحضور الخامس">
+              الحضور الخامس
+            </option>
+
+            <!-- M -->
+            <option value="الحضور السادس">
+              الحضور السادس
+            </option>
+
+            <!-- N -->
+            <option value="الحضور السابع">
+              الحضور السابع
+            </option>
+
+            <!-- O -->
+            <option value="الحضور الثامن">
+              الحضور الثامن
+            </option>
+
+            <!-- P -->
+            <option value="الحضور الشامل">
+              الحضور الشامل
+            </option>
+
+            <!-- Q -->
+            <option value="الحضور التاسع">
+              الحضور التاسع
+            </option>
+
+            <!-- R -->
+            <option value="الحضور العاشر">
+              الحضور العاشر
+            </option>
+
+            <!-- S -->
+            <option value="الحضور الحادي عشر">
+              الحضور الحادي عشر
+            </option>
+
+            <!-- T -->
+            <option value="الحضور الثاني عشر">
+              الحضور الثاني عشر
+            </option>
+
+            <!-- U -->
+            <option value="الحضور الثالث عشر">
+              الحضور الثالث عشر
+            </option>
+
+            <!-- V -->
+            <option value="الحضور الرابع عشر">
+              الحضور الرابع عشر
+            </option>
+
+            <!-- W -->
+            <option value="الحضور الخامس عشر">
+              الحضور الخامس عشر
+            </option>
+
+            <!-- X -->
+            <option value="الحضور السادس عشر">
+              الحضور السادس عشر
+            </option>
+
+            <!-- Y -->
+            <option value="الحضور السابع عشر">
+              الحضور السابع عشر
+            </option>
+
+            <!-- Z -->
+            <option value="الحضور الثامن عشر">
+              الحضور الثامن عشر
+            </option>
+
+            <!-- AA -->
+            <option value="الحضور التاسع عشر">
+              الحضور التاسع عشر
+            </option>
+
+            <!-- AB -->
+            <option value="الحضور العشرين">
+              الحضور العشرين
+            </option>
+
+          </select>
+
+        </div>
+
+        <!-- ========================= -->
+        <!-- Manual Input -->
+        <!-- ========================= -->
+
+        <div>
+
+          <label for="manualBarcode">
+            إدخال يدوي
+          </label>
+
           <input
             type="text"
             id="manualBarcode"
-            placeholder="اكتب الكود هنا"
+            placeholder="اكتب الكود أو كلمة المرور هنا"
             autofocus
             inputmode="numeric"
             autocomplete="one-time-code"
-            oninput="checkBarcode(this)">
+            oninput="checkBarcode(this)"
+          >
+
         </div>
 
+        <!-- ========================= -->
+        <!-- Buttons -->
+        <!-- ========================= -->
+
         <div class="actions">
-          <button class="btn-primary" onclick="startScanner()">بدء المسح</button>
-          <button class="btn-ghost" onclick="submitManually()">تسجيل بالكود</button>
+
+          <button
+            class="btn-primary"
+            onclick="startScanner()">
+            بدء المسح
+          </button>
+
+          <button
+            class="btn-ghost"
+            onclick="submitManually()">
+            تسجيل بالكود
+          </button>
+
         </div>
 
         <p id="status"></p>
+
       </div>
+
     </section>
 
+    <!-- Student -->
     <p id="studentName"></p>
+
+    <!-- Attendance -->
     <div id="attendanceTable"></div>
+
   </main>
 
+
   <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwGfAFHw0Ks2xuvdpM5-b23srM7vgozZA3pfHrpwXM8N7SQpT8n1WXEG0BCjOxlxAr1/exec"; 
-    let scanner, lastScanned = "", lastTime = 0;
+
+    // =========================================================
+    // GOOGLE APPS SCRIPT URL
+    // =========================================================
+
+    const scriptURL =
+      "https://script.google.com/macros/s/AKfycbwGfAFHw0Ks2xuvdpM5-b23srM7vgozZA3pfHrpwXM8N7SQpT8n1WXEG0BCjOxlxAr1/exec";
+
+
+    // =========================================================
+    // Scanner variables
+    // =========================================================
+
+    let scanner = null;
+
+    let lastScanned = "";
+
+    let lastTime = 0;
+
+
+    // =========================================================
+    // Offline queue
+    // =========================================================
 
     const PENDING_KEY = "pendingAttendance:v1";
 
+
     function loadPending() {
+
       try {
-        const raw = localStorage.getItem(PENDING_KEY);
-        const arr = raw ? JSON.parse(raw) : [];
-        return Array.isArray(arr) ? arr : [];
+
+        const raw =
+          localStorage.getItem(PENDING_KEY);
+
+        const arr =
+          raw ? JSON.parse(raw) : [];
+
+        return Array.isArray(arr)
+          ? arr
+          : [];
+
       } catch {
+
         return [];
+
       }
+
     }
+
 
     function savePending(items) {
+
       try {
-        localStorage.setItem(PENDING_KEY, JSON.stringify(items));
+
+        localStorage.setItem(
+          PENDING_KEY,
+          JSON.stringify(items)
+        );
+
       } catch {
-        // ignore
+
+        // Ignore localStorage errors
+
       }
+
     }
 
-    function queueSubmission(barcode, attendanceType) {
-      const items = loadPending();
-      items.push({ barcode: String(barcode), attendanceType: String(attendanceType), ts: Date.now() });
+
+    function queueSubmission(
+      barcode,
+      attendanceType
+    ) {
+
+      const items =
+        loadPending();
+
+      items.push({
+
+        barcode:
+          String(barcode).trim(),
+
+        attendanceType:
+          String(attendanceType).trim(),
+
+        ts:
+          Date.now()
+
+      });
+
       savePending(items);
+
     }
+
+
+    // =========================================================
+    // Send offline requests
+    // =========================================================
 
     async function flushPending() {
-      if (!navigator.onLine) return;
-      const items = loadPending();
-      if (!items.length) return;
-
-      // Send in FIFO order
-      const remaining = [];
-      for (const item of items) {
-        try {
-          await fetch(scriptURL, {
-            method: "POST",
-            body: new URLSearchParams({ barcode: item.barcode, attendanceType: item.attendanceType })
-          });
-        } catch {
-          remaining.push(item);
-        }
-      }
-      savePending(remaining);
-    }
-
-    window.addEventListener("online", () => {
-      flushPending();
-    });
-
-    function checkBarcode(input) {
-      input.value = input.value.replace(/\D/g, '');
-      if (input.value.length === 5) {
-        submitManually();
-        input.value = ""; 
-      }
-    }
-
-    function startScanner() {
-      // Avoid creating multiple scanner instances
-      if (scanner) return;
-      scanner = new Html5QrcodeScanner("reader", { fps: 30, qrbox: 250 });
-      scanner.render(onScanSuccess, (errorMessage) => {
-        console.warn(errorMessage);
-      });
-    }
-
-    function onScanSuccess(decodedText) {
-      const now = Date.now();
-      if (decodedText === lastScanned && (now - lastTime < 1000)) {
-        return;
-      }
-      lastScanned = decodedText;
-      lastTime = now; 
-      document.getElementById("status").innerText = "جارٍ التحقق...";
-      const attendanceType = document.getElementById("attendanceType").value;
-      submitData(decodedText, attendanceType);
-    }
-
-    function submitManually() {
-      const barcode = document.getElementById("manualBarcode").value;
-      const attendanceType = document.getElementById("attendanceType").value;
-      if (!barcode) {
-        document.getElementById("status").innerText = "من فضلك اكتب الكود";
-        return;
-      }
-      document.getElementById("status").innerText = "جارٍ التحقق...";
-      submitData(barcode, attendanceType);
-    }
-
-    function showLoading() {
-      document.getElementById("status").innerHTML = 'جارٍ التحقق... <span class="spinner"></span>';
-    }
-
-    function hideLoading(message) {
-      document.getElementById("status").innerText = message;
-    }
-
-    function submitData(barcode, attendanceType) {
-      // Clear old data before verifying
-      document.getElementById("studentName").innerText = "";
-      document.getElementById("attendanceTable").innerHTML = "";
 
       if (!navigator.onLine) {
-        queueSubmission(barcode, attendanceType);
-        hideLoading("تم حفظ التسجيل (أوفلاين) وسيتم الإرسال عند عودة الإنترنت");
         return;
       }
 
-      showLoading(); // 👈 عرض السبينر
+      const items =
+        loadPending();
 
-      fetch(scriptURL, {
-        method: 'POST',
-        body: new URLSearchParams({
-          barcode: barcode,
-          attendanceType: attendanceType
-        })
-      })
-      .then(response => response.json())
-      .then(data => {
-           hideLoading(data.message); // 👈 إخفاء السبينر وعرض النتيجة
-           if (data.studentName) {
-               document.getElementById("studentName").innerText = "الطالب: " + data.studentName;
-           }
-           if (data.attendance) {
-               renderAttendanceTable(data.attendance);
-           }
-       })
-      .catch(error => {
-        console.error("Error:", error.message);
-        // If we lost connection mid-request, queue for retry
-        queueSubmission(barcode, attendanceType);
-        hideLoading("تعذر الاتصال. تم حفظ التسجيل وسيتم الإرسال تلقائيًا");
-      });
-    }
-
-
-
-    function renderAttendanceTable(attendanceArray) {
-      const headers = [
-        "الحضور الأول",
-        "الحضور الثاني",
-        "الحضور الثالث",
-        "الحضور الرابع",
-        "الحضور الخامس",
-        "الحضور السادس",
-        "الحضور السابع",
-        "الحضور الثامن",
-        "الحضور التاسع",
-        "الحضور الشامل",
-        "الحضور العاشر",
-        "الحضور الحادي عشر",
-        "الحضور الثاني عشر",
-        "الحضور الثالث عشر",
-        "الحضور الرابع عشر",
-        "الحضور الخامس عشر",
-        "الحضور السادس عشر",
-        "الحضور السابع عشر",
-        "حضور المراجعة الأولى",
-        "حضور المراجعة الثانية",
-        "حضور المراجعة الثالثة",
-        "حضور المراجعة ليلة الامتحان"
-      ];
-      
-      let table = "<table><tr>";
-      headers.forEach(h => table += `<th>${h}</th>`);
-      table += "</tr><tr>";
-
-      for (let i = 0; i < headers.length; i++) {
-        const val = Array.isArray(attendanceArray) ? attendanceArray[i] : "";
-        table += `<td>${val === "✓" ? "✅" : "❌"}</td>`;
+      if (!items.length) {
+        return;
       }
 
-      table += "</tr></table>";
-      document.getElementById("attendanceTable").innerHTML = table;
+      const remaining = [];
+
+
+      for (const item of items) {
+
+        try {
+
+          const response =
+            await fetch(
+              scriptURL,
+              {
+                method: "POST",
+
+                body:
+                  new URLSearchParams({
+
+                    barcode:
+                      item.barcode,
+
+                    attendanceType:
+                      item.attendanceType
+
+                  })
+              }
+            );
+
+
+          if (!response.ok) {
+
+            throw new Error(
+              "HTTP error " +
+              response.status
+            );
+
+          }
+
+
+          const data =
+            await response.json();
+
+
+          // If Apps Script says that the student
+          // does not exist, don't keep retrying forever.
+          if (
+            data.message ===
+            "البطاقة غير موجودة!"
+          ) {
+
+            continue;
+
+          }
+
+
+        } catch (error) {
+
+          remaining.push(item);
+
+        }
+
+      }
+
+
+      savePending(remaining);
+
     }
 
-    // Attempt to flush any queued submissions on startup
+
+    window.addEventListener(
+      "online",
+      () => {
+
+        flushPending();
+
+      }
+    );
+
+
+    // =========================================================
+    // Manual barcode input
+    // =========================================================
+
+    function checkBarcode(input) {
+
+      // Keep numbers only
+      input.value =
+        input.value.replace(/\D/g, "");
+
+
+      // Automatically submit after 5 digits
+      if (
+        input.value.length === 5
+      ) {
+
+        submitManually();
+
+        input.value = "";
+
+      }
+
+    }
+
+
+    // =========================================================
+    // Start QR / Barcode scanner
+    // =========================================================
+
+    function startScanner() {
+
+      if (scanner) {
+
+        return;
+
+      }
+
+
+      scanner =
+        new Html5QrcodeScanner(
+          "reader",
+          {
+            fps: 30,
+            qrbox: 250
+          }
+        );
+
+
+      scanner.render(
+
+        onScanSuccess,
+
+        (errorMessage) => {
+
+          console.warn(
+            errorMessage
+          );
+
+        }
+
+      );
+
+    }
+
+
+    // =========================================================
+    // Scanner success
+    // =========================================================
+
+    function onScanSuccess(
+      decodedText
+    ) {
+
+      const now =
+        Date.now();
+
+
+      // Prevent duplicate scanning
+      if (
+        decodedText === lastScanned &&
+        now - lastTime < 1000
+      ) {
+
+        return;
+
+      }
+
+
+      lastScanned =
+        decodedText;
+
+      lastTime =
+        now;
+
+
+      const attendanceType =
+        document
+          .getElementById(
+            "attendanceType"
+          )
+          .value;
+
+
+      submitData(
+        decodedText,
+        attendanceType
+      );
+
+    }
+
+
+    // =========================================================
+    // Manual submit
+    // =========================================================
+
+    function submitManually() {
+
+      const input =
+        document.getElementById(
+          "manualBarcode"
+        );
+
+
+      const barcode =
+        input.value.trim();
+
+
+      const attendanceType =
+        document
+          .getElementById(
+            "attendanceType"
+          )
+          .value;
+
+
+      if (!barcode) {
+
+        document
+          .getElementById("status")
+          .innerText =
+          "من فضلك اكتب الكود";
+
+        return;
+
+      }
+
+
+      submitData(
+        barcode,
+        attendanceType
+      );
+
+
+      input.value = "";
+
+    }
+
+
+    // =========================================================
+    // Loading
+    // =========================================================
+
+    function showLoading() {
+
+      document
+        .getElementById("status")
+        .innerHTML =
+        'جارٍ التحقق... <span class="spinner"></span>';
+
+    }
+
+
+    function hideLoading(message) {
+
+      document
+        .getElementById("status")
+        .innerText =
+        message;
+
+    }
+
+
+    // =========================================================
+    // Submit data to Apps Script
+    // =========================================================
+
+    function submitData(
+      barcode,
+      attendanceType
+    ) {
+
+      // Clear old result
+
+      document
+        .getElementById(
+          "studentName"
+        )
+        .innerText = "";
+
+
+      document
+        .getElementById(
+          "attendanceTable"
+        )
+        .innerHTML = "";
+
+
+      barcode =
+        String(barcode).trim();
+
+
+      attendanceType =
+        String(attendanceType).trim();
+
+
+      if (!barcode) {
+
+        hideLoading(
+          "الكود غير صحيح!"
+        );
+
+        return;
+
+      }
+
+
+      // =====================================================
+      // Offline
+      // =====================================================
+
+      if (!navigator.onLine) {
+
+        queueSubmission(
+          barcode,
+          attendanceType
+        );
+
+
+        hideLoading(
+          "تم حفظ التسجيل أوفلاين وسيتم الإرسال عند عودة الإنترنت"
+        );
+
+
+        return;
+
+      }
+
+
+      showLoading();
+
+
+      // =====================================================
+      // POST
+      // =====================================================
+
+      fetch(
+        scriptURL,
+        {
+
+          method: "POST",
+
+          body:
+            new URLSearchParams({
+
+              barcode:
+                barcode,
+
+              attendanceType:
+                attendanceType
+
+            })
+
+        }
+      )
+
+      .then(
+        response => {
+
+          if (!response.ok) {
+
+            throw new Error(
+              "HTTP error " +
+              response.status
+            );
+
+          }
+
+          return response.json();
+
+        }
+      )
+
+      .then(
+        data => {
+
+          // ===============================================
+          // Message from Apps Script
+          // ===============================================
+
+          hideLoading(
+            data.message ||
+            "تم تنفيذ العملية"
+          );
+
+
+          // ===============================================
+          // Student name
+          // ===============================================
+
+          if (
+            data.studentName
+          ) {
+
+            document
+              .getElementById(
+                "studentName"
+              )
+              .innerText =
+              "الطالب: " +
+              data.studentName;
+
+          }
+
+
+          // ===============================================
+          // Attendance
+          // ===============================================
+
+          if (
+            Array.isArray(
+              data.attendance
+            )
+          ) {
+
+            renderAttendanceTable(
+              data.attendance
+            );
+
+          }
+
+        }
+      )
+
+      .catch(
+        error => {
+
+          console.error(
+            "Error:",
+            error
+          );
+
+
+          // Save request for retry
+
+          queueSubmission(
+            barcode,
+            attendanceType
+          );
+
+
+          hideLoading(
+            "تعذر الاتصال. تم حفظ التسجيل وسيتم الإرسال تلقائيًا"
+          );
+
+        }
+      );
+
+    }
+
+
+    // =========================================================
+    // Attendance table
+    //
+    // MUST MATCH Apps Script:
+    //
+    // H  = الحضور الاول
+    // I  = الحضور الثاني
+    // J  = الحضور الثالث
+    // K  = الحضور الرابع
+    // L  = الحضور الخامس
+    // M  = الحضور السادس
+    // N  = الحضور السابع
+    // O  = الحضور الثامن
+    // P  = الحضور الشامل
+    // Q  = الحضور التاسع
+    // R  = الحضور العاشر
+    // S  = الحضور الحادي عشر
+    // T  = الحضور الثاني عشر
+    // U  = الحضور الثالث عشر
+    // V  = الحضور الرابع عشر
+    // W  = الحضور الخامس عشر
+    // X  = الحضور السادس عشر
+    // Y  = الحضور السابع عشر
+    // Z  = الحضور الثامن عشر
+    // AA = الحضور التاسع عشر
+    // AB = الحضور العشرين
+    // =========================================================
+
+    function renderAttendanceTable(
+      attendanceArray
+    ) {
+
+      const headers = [
+
+        "الحضور الأول",
+
+        "الحضور الثاني",
+
+        "الحضور الثالث",
+
+        "الحضور الرابع",
+
+        "الحضور الخامس",
+
+        "الحضور السادس",
+
+        "الحضور السابع",
+
+        "الحضور الثامن",
+
+        "الحضور الشامل",
+
+        "الحضور التاسع",
+
+        "الحضور العاشر",
+
+        "الحضور الحادي عشر",
+
+        "الحضور الثاني عشر",
+
+        "الحضور الثالث عشر",
+
+        "الحضور الرابع عشر",
+
+        "الحضور الخامس عشر",
+
+        "الحضور السادس عشر",
+
+        "الحضور السابع عشر",
+
+        "الحضور الثامن عشر",
+
+        "الحضور التاسع عشر",
+
+        "الحضور العشرين"
+
+      ];
+
+
+      let table =
+        "<table>";
+
+
+      // =====================================================
+      // Header
+      // =====================================================
+
+      table +=
+        "<thead><tr>";
+
+
+      headers.forEach(
+        header => {
+
+          table +=
+            `<th>${header}</th>`;
+
+        }
+      );
+
+
+      table +=
+        "</tr></thead>";
+
+
+      // =====================================================
+      // Attendance values
+      // =====================================================
+
+      table +=
+        "<tbody><tr>";
+
+
+      for (
+        let i = 0;
+        i < headers.length;
+        i++
+      ) {
+
+        const value =
+          Array.isArray(
+            attendanceArray
+          )
+            ? attendanceArray[i]
+            : "";
+
+
+        if (
+          value === "✓"
+        ) {
+
+          table +=
+            '<td class="present">✅</td>';
+
+        } else {
+
+          table +=
+            '<td class="absent">❌</td>';
+
+        }
+
+      }
+
+
+      table +=
+        "</tr></tbody>";
+
+
+      table +=
+        "</table>";
+
+
+      document
+        .getElementById(
+          "attendanceTable"
+        )
+        .innerHTML =
+        table;
+
+    }
+
+
+    // =========================================================
+    // Try sending pending requests on page load
+    // =========================================================
+
     flushPending();
+
   </script>
 
 </body>
+
 </html>
