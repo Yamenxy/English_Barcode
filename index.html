@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تسجيل الحضور</title>
+  <meta name="theme-color" content="#2563eb">
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    :root {
+      --bg: #f6f7fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --border: #e5e7eb;
+      --primary: #2563eb;
+      --primary-600: #1d4ed8;
+      --danger: #dc2626;
+      --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      line-height: 1.5;
+    }
+
+    .container {
+      width: min(980px, calc(100% - 32px));
+      margin: 28px auto 40px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 14px;
+    }
+
+    .header h2 {
+      margin: 0;
+      font-weight: 700;
+      letter-spacing: 0.2px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 16px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    #reader {
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* html5-qrcode renders its own elements; keep it visually contained */
+    #reader > div {
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    select, button, input {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 11px 12px;
+      font-size: 15px;
+      outline: none;
+      background: #fff;
+      transition: border-color 120ms ease, box-shadow 120ms ease, transform 60ms ease;
+    }
+
+    input::placeholder { color: #9ca3af; }
+
+    select:focus, input:focus {
+      border-color: rgba(37, 99, 235, 0.55);
+      box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.14);
+    }
+
+    .controls {
+      display: grid;
+      gap: 10px;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 500px) {
+      .actions { grid-template-columns: 1fr; }
+    }
+
+    button {
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      border-color: rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-primary:hover { background: var(--primary-600); }
+    .btn-primary:active { transform: translateY(1px); }
+
+    .btn-ghost {
+      background: #fff;
+      color: var(--text);
+    }
+
+    .btn-ghost:hover {
+      border-color: #cbd5e1;
+      background: #f9fafb;
+    }
+
+    #status {
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+      color: var(--muted);
+      background: #fafafa;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      text-align: center;
+      word-break: break-word;
+    }
+
+    #studentName {
+      margin: 12px 0 0;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    #attendanceTable {
+      margin-top: 10px;
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      min-width: 720px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+    th:first-child, td:first-child { border-right: 0; }
+
+    th {
+      background: #f8fafc;
+      color: #0f172a;
+      font-size: 13px;
+      font-weight: 800;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    td { font-size: 18px; }
+
+    .spinner {
+      border: 3px solid #e5e7eb;
+      border-top: 3px solid var(--primary);
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 0.9s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+      flex: 0 0 auto;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+
+</head>
+<body>
+  <main class="container">
+    <div class="header">
+      <h2>تانية ثانوي</h2>
+      <p>تسجيل الحضور بالباركود أو بالكتابة اليدوية</p>
+    </div>
+
+    <section class="card grid">
+      <div>
+        <div id="reader"></div>
+      </div>
+
+      <div class="controls">
+        <div>
+          <label for="attendanceType">نوع الحضور</label>
+          <select id="attendanceType">
+    <option value="الحضور الاول">الحضور الأول</option>
+    <option value="الحضور الثاني">الحضور الثاني</option>
+    <option value="الحضور الثالث">الحضور الثالث</option>
+    <option value="الحضور الرابع">الحضور الرابع</option>
+    <option value="الحضور الخامس">الحضور الخامس</option>
+    <option value="الحضور السادس">الحضور السادس</option>
+    <option value="الحضور السابع">الحضور السابع</option>
+    <option value="الحضور الثامن">الحضور الثامن</option>
+    <option value="الحضور التاسع">الحضور التاسع</option>
+    <option value="الحضور الشامل">الحضور الشامل</option>
+    <option value="الحضور العاشر">الحضور العاشر</option>
+    <option value="الحضور الحادي عشر">الحضور الحادي عشر</option>
+    <option value="الحضور الثاني عشر">الحضور الثاني عشر</option>
+    <option value="الحضور الثالث عشر">الحضور الثالث عشر</option>
+    <option value="الحضور الرابع عشر">الحضور الرابع عشر</option>    
+    <option value="الحضور الخامس عشر">الحضور الخامس عشر</option>    
+    <option value="الحضور السادس عشر">الحضور السادس عشر</option>    
+    <option value="الحضور السابع عشر">الحضور السابع عشر</option>    
+    <option value="حضور المراجعة الاولي">حضور المراجعة الاولي</option>    
+    <option value="حضور المراجعة الثانية">حضور المراجعة الثانية</option>    
+    <option value="حضور المراجعة الثالثة">حضور المراجعة الثالثة</option>    
+    <option value="حضور المراجعة ليلة الامتحان">حضور المراجعة ليلة الامتحان</option>
+          </select>
+        </div>
+
+        <div>
+          <label for="manualBarcode">إدخال يدوي</label>
+          <input
+            type="text"
+            id="manualBarcode"
+            placeholder="اكتب الكود هنا"
+            autofocus
+            inputmode="numeric"
+            autocomplete="one-time-code"
+            oninput="checkBarcode(this)">
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" onclick="startScanner()">بدء المسح</button>
+          <button class="btn-ghost" onclick="submitManually()">تسجيل بالكود</button>
+        </div>
+
+        <p id="status"></p>
+      </div>
+    </section>
+
+    <p id="studentName"></p>
+    <div id="attendanceTable"></div>
+  </main>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwGfAFHw0Ks2xuvdpM5-b23srM7vgozZA3pfHrpwXM8N7SQpT8n1WXEG0BCjOxlxAr1/exec"; 
+    let scanner, lastScanned = "", lastTime = 0;
+
+    const PENDING_KEY = "pendingAttendance:v1";
+
+    function loadPending() {
+      try {
+        const raw = localStorage.getItem(PENDING_KEY);
+        const arr = raw ? JSON.parse(raw) : [];
+        return Array.isArray(arr) ? arr : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function savePending(items) {
+      try {
+        localStorage.setItem(PENDING_KEY, JSON.stringify(items));
+      } catch {
+        // ignore
+      }
+    }
+
+    function queueSubmission(barcode, attendanceType) {
+      const items = loadPending();
+      items.push({ barcode: String(barcode), attendanceType: String(attendanceType), ts: Date.now() });
+      savePending(items);
+    }
+
+    async function flushPending() {
+      if (!navigator.onLine) return;
+      const items = loadPending();
+      if (!items.length) return;
+
+      // Send in FIFO order
+      const remaining = [];
+      for (const item of items) {
+        try {
+          await fetch(scriptURL, {
+            method: "POST",
+            body: new URLSearchParams({ barcode: item.barcode, attendanceType: item.attendanceType })
+          });
+        } catch {
+          remaining.push(item);
+        }
+      }
+      savePending(remaining);
+    }
+
+    window.addEventListener("online", () => {
+      flushPending();
+    });
+
+    function checkBarcode(input) {
+      input.value = input.value.replace(/\D/g, '');
+      if (input.value.length === 5) {
+        submitManually();
+        input.value = ""; 
+      }
+    }
+
+    function startScanner() {
+      // Avoid creating multiple scanner instances
+      if (scanner) return;
+      scanner = new Html5QrcodeScanner("reader", { fps: 30, qrbox: 250 });
+      scanner.render(onScanSuccess, (errorMessage) => {
+        console.warn(errorMessage);
+      });
+    }
+
+    function onScanSuccess(decodedText) {
+      const now = Date.now();
+      if (decodedText === lastScanned && (now - lastTime < 1000)) {
+        return;
+      }
+      lastScanned = decodedText;
+      lastTime = now; 
+      document.getElementById("status").innerText = "جارٍ التحقق...";
+      const attendanceType = document.getElementById("attendanceType").value;
+      submitData(decodedText, attendanceType);
+    }
+
+    function submitManually() {
+      const barcode = document.getElementById("manualBarcode").value;
+      const attendanceType = document.getElementById("attendanceType").value;
+      if (!barcode) {
+        document.getElementById("status").innerText = "من فضلك اكتب الكود";
+        return;
+      }
+      document.getElementById("status").innerText = "جارٍ التحقق...";
+      submitData(barcode, attendanceType);
+    }
+
+    function showLoading() {
+      document.getElementById("status").innerHTML = 'جارٍ التحقق... <span class="spinner"></span>';
+    }
+
+    function hideLoading(message) {
+      document.getElementById("status").innerText = message;
+    }
+
+    function submitData(barcode, attendanceType) {
+      // Clear old data before verifying
+      document.getElementById("studentName").innerText = "";
+      document.getElementById("attendanceTable").innerHTML = "";
+
+      if (!navigator.onLine) {
+        queueSubmission(barcode, attendanceType);
+        hideLoading("تم حفظ التسجيل (أوفلاين) وسيتم الإرسال عند عودة الإنترنت");
+        return;
+      }
+
+      showLoading(); // 👈 عرض السبينر
+
+      fetch(scriptURL, {
+        method: 'POST',
+        body: new URLSearchParams({
+          barcode: barcode,
+          attendanceType: attendanceType
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+           hideLoading(data.message); // 👈 إخفاء السبينر وعرض النتيجة
+           if (data.studentName) {
+               document.getElementById("studentName").innerText = "الطالب: " + data.studentName;
+           }
+           if (data.attendance) {
+               renderAttendanceTable(data.attendance);
+           }
+       })
+      .catch(error => {
+        console.error("Error:", error.message);
+        // If we lost connection mid-request, queue for retry
+        queueSubmission(barcode, attendanceType);
+        hideLoading("تعذر الاتصال. تم حفظ التسجيل وسيتم الإرسال تلقائيًا");
+      });
+    }
+
+
+
+    function renderAttendanceTable(attendanceArray) {
+      const headers = [
+        "الحضور الأول",
+        "الحضور الثاني",
+        "الحضور الثالث",
+        "الحضور الرابع",
+        "الحضور الخامس",
+        "الحضور السادس",
+        "الحضور السابع",
+        "الحضور الثامن",
+        "الحضور التاسع",
+        "الحضور الشامل",
+        "الحضور العاشر",
+        "الحضور الحادي عشر",
+        "الحضور الثاني عشر",
+        "الحضور الثالث عشر",
+        "الحضور الرابع عشر",
+        "الحضور الخامس عشر",
+        "الحضور السادس عشر",
+        "الحضور السابع عشر",
+        "حضور المراجعة الأولى",
+        "حضور المراجعة الثانية",
+        "حضور المراجعة الثالثة",
+        "حضور المراجعة ليلة الامتحان"
+      ];
+      
+      let table = "<table><tr>";
+      headers.forEach(h => table += `<th>${h}</th>`);
+      table += "</tr><tr>";
+
+      for (let i = 0; i < headers.length; i++) {
+        const val = Array.isArray(attendanceArray) ? attendanceArray[i] : "";
+        table += `<td>${val === "✓" ? "✅" : "❌"}</td>`;
+      }
+
+      table += "</tr></table>";
+      document.getElementById("attendanceTable").innerHTML = table;
+    }
+
+    // Attempt to flush any queued submissions on startup
+    flushPending();
+  </script>
+
+</body>
+</html>
